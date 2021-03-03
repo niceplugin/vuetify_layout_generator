@@ -1,32 +1,64 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app :class="outline">
+
+    <template v-if="updated">
+
+      <app-navigation-drawer v-if="enabled.navigationDrawer"/>
+
+      <app-system-bar v-if="enabled.systemBar"/>
+
+      <app-bar v-if="enabled.appBar"/>
+
+      <v-main>
+        <app-toolbar v-if="enabled.toolbar"/>
+
+        <app-container v-if="enabled.container"/>
+      </v-main>
+
+      <app-footer v-if="enabled.footer"/>
+
+      <app-bottom-navigation v-if="enabled.bottomNavigation"/>
+
+    </template>
+
+    <editor></editor>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import stateOutside from "@/store/stateOutside";
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+export default {
+  computed: {
+    enabled() {
+      const obj = {}
+      const keys = Object.keys(stateOutside)
+      keys.forEach(comp => obj[comp] = stateOutside[comp].enabled)
+      return obj
+    },
+    outline() {
+      return this.$store.state.editor.outline ? 'outline' : ''
+    },
+    updated() {
+      return this.$store.state.editor.updated
     }
+  },
+
+  components: {
+    AppNavigationDrawer: () => import('./views/AppNavigationDrawer'),
+    AppSystemBar: () => import('./views/AppSystemBar'),
+    AppBar: () => import('./views/AppAppBar'),
+    AppToolbar: () => import('./views/AppToolbar'),
+    AppContainer: () => import('./views/AppContainer'),
+    AppFooter: () => import('./views/AppFooter'),
+    AppBottomNavigation: () => import('./views/AppBottomNavigation'),
+    Editor: () => import('./views/Editor')
   }
 }
+</script>
+
+<style lang="sass" scoped>
+.outline
+  *
+    outline: 1px solid red
 </style>
